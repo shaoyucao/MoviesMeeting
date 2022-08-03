@@ -14,7 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
-    @Reference(interfaceClass = UserAPI.class, check = false)
+    /**
+     * 配置Dubbo的启动检查check = false， 保证即使服务端不启动，客户端也能正常启动，但调用服务的时候会报内部错误
+     * @Reference(interfaceClass = UserAPI.class, check = false)
+     */
+    @Reference(interfaceClass = UserAPI.class)
     private UserAPI userAPI;
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
