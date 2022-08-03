@@ -5,6 +5,12 @@ public interface UserAPI {
 
     boolean registry(UserModel userModel);
 
+    /**
+     * 校验用户名
+     * 存在返回false，不存在返回true
+     * @param username
+     * @return
+     */
     boolean checkUsername(String username);
 
     UserInfoModel getUserInfo(int uuid);
