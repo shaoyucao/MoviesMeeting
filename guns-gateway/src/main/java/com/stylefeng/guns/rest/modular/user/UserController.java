@@ -18,7 +18,7 @@ public class UserController {
      * 配置Dubbo的启动检查check = false， 保证即使服务端不启动，客户端也能正常启动，但调用服务的时候会报内部错误
      * @Reference(interfaceClass = UserAPI.class, check = false)
      */
-    @Reference(interfaceClass = UserAPI.class)
+    @Reference(interfaceClass = UserAPI.class, check = false)
     private UserAPI userAPI;
 
     @RequestMapping(value = "register", method = RequestMethod.POST)

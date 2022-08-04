@@ -4,14 +4,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.stylefeng.guns.api.film.FilmServiceApi;
-import com.stylefeng.guns.api.film.vo.BannerVO;
-import com.stylefeng.guns.api.film.vo.FilmInfo;
-import com.stylefeng.guns.api.film.vo.FilmVO;
+import com.stylefeng.guns.api.film.vo.*;
 import com.stylefeng.guns.core.util.DateUtil;
-import com.stylefeng.guns.rest.common.persistence.dao.MoocBannerTMapper;
-import com.stylefeng.guns.rest.common.persistence.dao.MoocFilmTMapper;
-import com.stylefeng.guns.rest.common.persistence.model.MoocBannerT;
-import com.stylefeng.guns.rest.common.persistence.model.MoocFilmT;
+import com.stylefeng.guns.rest.common.persistence.dao.*;
+import com.stylefeng.guns.rest.common.persistence.model.*;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -27,6 +23,15 @@ public class DefaultFilmServiceImpl implements FilmServiceApi {
 
     @Resource
     private MoocFilmTMapper moocFilmTMapper;
+
+    @Resource
+    private MoocCatDictTMapper moocCatDictTMapper;
+
+    @Resource
+    private MoocSourceDictTMapper moocSourceDictTMapper;
+
+    @Resource
+    private MoocYearDictTMapper moocYearDictTMapper;
 
     @Override
     public List<BannerVO> getBanners() {
@@ -79,12 +84,13 @@ public class DefaultFilmServiceImpl implements FilmServiceApi {
             //组织filmInfos
             filmInfos = getFilmInfos(moocFilms);
             filmVO.setFilmNum(moocFilms.size());
+            filmVO.setFilmInfo(filmInfos);
         }
         else {
             //如果不是，则是列表业，同样需要限制内容为热映影片
 
         }
-        return null;
+        return filmVO;
     }
 
     @Override
@@ -92,7 +98,7 @@ public class DefaultFilmServiceImpl implements FilmServiceApi {
         FilmVO filmVO = new FilmVO();
         List<FilmInfo> filmInfos = new ArrayList<>();
         //判断是否是首页需要的内容
-        //热映影片的限制条件
+        //即将上映影片的限制条件
         EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("film_status", "2");
         if(isLimit) {
@@ -103,26 +109,95 @@ public class DefaultFilmServiceImpl implements FilmServiceApi {
             //组织filmInfos
             filmInfos = getFilmInfos(moocFilms);
             filmVO.setFilmNum(moocFilms.size());
+            filmVO.setFilmInfo(filmInfos);
         }
         else {
             //如果不是，则是列表业，同样需要限制内容为热映影片
 
         }
-        return null;
+        return filmVO;
     }
 
     @Override
     public List<FilmInfo> getBoxRanking() {
-        return null;
+        //正在上映的，票房前10名
+        EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("film_status", "1");
+
+        Page<MoocFilmT> page = new Page<>(1, 10, "film_box_office");
+        List<MoocFilmT> moocFilms = moocFilmTMapper.selectPage(page, entityWrapper);
+
+        List<FilmInfo> filmInfos = getFilmInfos(moocFilms);
+        return filmInfos;
     }
 
     @Override
     public List<FilmInfo> getExpectRanking() {
-        return null;
+        //即将上映的，预售前10名
+        EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("film_status", "2");
+
+        Page<MoocFilmT> page = new Page<>(1, 10, "film_preSaleNum");
+        List<MoocFilmT> moocFilms = moocFilmTMapper.selectPage(page, entityWrapper);
+
+        List<FilmInfo> filmInfos = getFilmInfos(moocFilms);
+        return filmInfos;
     }
 
     @Override
     public List<FilmInfo> getTop() {
-        return null;
+        //正在上映的，评分前10名
+        EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("film_status", "1");
+        Page<MoocFilmT> page = new Page<>(1, 10, "film_score");
+        List<MoocFilmT> moocFilms = moocFilmTMapper.selectPage(page, entityWrapper);
+
+        List<FilmInfo> filmInfos = getFilmInfos(moocFilms);
+        return filmInfos;
+    }
+
+    @Override
+    public List<CatVO> getCats() {
+        List<CatVO> cats = new ArrayList<>();
+        //查询实体对象
+        List<MoocCatDictT> moocCats = moocCatDictTMapper.selectList(null);
+        //将实体对象转换为业务对象
+        for(MoocCatDictT moocCatDictT : moocCats) {
+            CatVO catVO = new CatVO();
+            catVO.setCatId(moocCatDictT.getUuid()+"");
+            catVO.setCatName(moocCatDictT.getShowName());
+            cats.add(catVO);
+        }
+        return cats;
+    }
+
+    @Override
+    public List<SourceVO> getSources() {
+        List<SourceVO> sources = new ArrayList<>();
+        //查询实体对象
+        List<MoocSourceDictT> moocSources = moocSourceDictTMapper.selectList(null);
+        //将实体对象转换为业务对象
+        for(MoocSourceDictT moocSourceDictT : moocSources) {
+            SourceVO sourceVO = new SourceVO();
+            sourceVO.setSourceId(moocSourceDictT.getUuid()+"");
+            sourceVO.setSourceName(moocSourceDictT.getShowName());
+            sources.add(sourceVO);
+        }
+        return sources;
+    }
+
+    @Override
+    public List<YearVO> getYears() {
+        List<YearVO> years = new ArrayList<>();
+        //查询实体对象
+        List<MoocYearDictT> moocYears = moocYearDictTMapper.selectList(null);
+        //将实体对象转换为业务对象
+        for(MoocYearDictT moocYearDictT : moocYears) {
+            YearVO yearVO = new YearVO();
+            yearVO.setYearId(moocYearDictT.getUuid()+"");
+            yearVO.setYearName(moocYearDictT.getShowName());
+            years.add(yearVO);
+        }
+        return years;
     }
 }
