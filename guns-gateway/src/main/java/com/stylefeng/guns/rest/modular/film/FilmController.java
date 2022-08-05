@@ -76,6 +76,7 @@ public class FilmController {
         List<CatVO> cats = filmServiceApi.getCats();
         List<CatVO> catResult = new ArrayList<>();
         CatVO cat = null;
+        //设置catVO的active属性（当前类别是否选中）
         for(CatVO catVO : cats) {
             //判断集合是否存在CatId，如果存在，则将对应的实体变成active状态
             //唯一需要对99的情况额外进行判断
