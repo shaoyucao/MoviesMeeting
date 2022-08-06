@@ -31,4 +31,9 @@ public interface CinemaServiceAPI {
     //8、根据放映场次查询播放的电影编号，然后根据电影编号获取对应的电影信息
     FilmInfoVO getFilmInfoByFieldId(int fieldId);
 
+    /*
+        该部分是订单模块需要的内容
+     */
+    OrderQueryVO getOrderNeeds(int fieldId);
+
 }
