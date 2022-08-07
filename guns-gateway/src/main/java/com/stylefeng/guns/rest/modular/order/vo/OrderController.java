@@ -27,7 +27,7 @@ public class OrderController {
     @RequestMapping(value = "buyTickets", method = RequestMethod.POST)
     public ResponseVO buyTickets(Integer fieldId, String soldSeats, String seatsName) {
 
-            // 验证售出的票是否为真
+            // 验证售出的票是否为真(需要开启ftp服务器文件验证）
             boolean isTrue = orderServiceAPI.isTrueSeats(fieldId+"",soldSeats);
 
             // 已经销售的座位里，有没有这些座位
