@@ -1,4 +1,4 @@
-package com.stylefeng.guns.rest.modular.order.vo;
+package com.stylefeng.guns.rest.modular.order;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.plugins.Page;
