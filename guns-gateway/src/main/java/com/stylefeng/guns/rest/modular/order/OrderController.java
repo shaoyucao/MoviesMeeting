@@ -27,7 +27,7 @@ public class OrderController {
     @RequestMapping(value = "buyTickets", method = RequestMethod.POST)
     public ResponseVO buyTickets(Integer fieldId, String soldSeats, String seatsName) {
 
-            // 验证售出的票是否为真(需要开启ftp服务器文件验证）
+            // 验证售出的票是否为真(需要开启ftp服务器文件验证）-->将座位号去json文件中对比一下，看下是否在里面
             boolean isTrue = orderServiceAPI.isTrueSeats(fieldId+"",soldSeats);
 
             // 已经销售的座位里，有没有这些座位
@@ -52,6 +52,7 @@ public class OrderController {
             }
     }
 
+    //获取当前登录人的购票信息
     @RequestMapping(value = "getOrderInfo", method = RequestMethod.POST)
     public ResponseVO getOrderInfo(@RequestParam(value = "nowPage", required = false, defaultValue = "1")Integer nowPage,
                                    @RequestParam(value = "pageSize", required = false, defaultValue = "5")Integer pageSize
@@ -64,18 +65,12 @@ public class OrderController {
         Page<OrderVO> page = new Page<>(nowPage,pageSize);
         if(userId != null && userId.trim().length()>0){
             Page<OrderVO> result = orderServiceAPI.getOrderByUserId(Integer.parseInt(userId), page);
-
-            Page<OrderVO> result2017 = orderServiceAPI.getOrderByUserId(Integer.parseInt(userId), page);
-
-            log.error(result2017.getRecords()+" , "+result.getRecords());
-
+            log.error(result.getRecords()+"");
             // 合并结果
-            int totalPages = (int)(result.getPages() + result2017.getPages());
+            int totalPages = (int)(result.getPages());
             // 2017和2018的订单总数合并
             List<OrderVO> orderVOList = new ArrayList<>();
             orderVOList.addAll(result.getRecords());
-            orderVOList.addAll(result2017.getRecords());
-
             return ResponseVO.success(nowPage,totalPages,"",orderVOList);
 
         }else{

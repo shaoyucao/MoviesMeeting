@@ -179,6 +179,8 @@ public class DefaultOrderServiceImpl implements OrderServiceAPI {
     }
 
     //根据放映场次获取所有的已售座位
+    // 1  1,2,3,4
+    // 2  5,6,7
     @Override
     public String getSoldSeatsByFieldId(Integer fieldId) {
         if(fieldId == null){
