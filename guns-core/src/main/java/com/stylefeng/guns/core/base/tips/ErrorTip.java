@@ -13,7 +13,7 @@ public class ErrorTip extends Tip {
 
     public ErrorTip(int code, String message) {
         super();
-        if(code == 700){
+        if(code == 700){ //token的错误
             this.status = code;
             this.msg = message;
         }else{

@@ -20,8 +20,17 @@ import java.util.List;
 @RequestMapping(value="/order/")
 public class OrderController {
 
-    @Reference(interfaceClass = OrderServiceAPI.class, check = false)
+    @Reference(interfaceClass = OrderServiceAPI.class,
+            check = false,
+            group = "order2018"
+    )
     private OrderServiceAPI orderServiceAPI;
+
+    @Reference(interfaceClass = OrderServiceAPI.class,
+            check = false,
+            group = "order2017"
+    )
+    private OrderServiceAPI orderServiceAPI2017;
 
     //购票
     @RequestMapping(value = "buyTickets", method = RequestMethod.POST)
@@ -65,12 +74,17 @@ public class OrderController {
         Page<OrderVO> page = new Page<>(nowPage,pageSize);
         if(userId != null && userId.trim().length()>0){
             Page<OrderVO> result = orderServiceAPI.getOrderByUserId(Integer.parseInt(userId), page);
-            log.error(result.getRecords()+"");
+
+            Page<OrderVO> result2017 = orderServiceAPI2017.getOrderByUserId(Integer.parseInt(userId), page);
+
+            log.warn(result.getRecords()+""+result2017.getRecords());
             // 合并结果
-            int totalPages = (int)(result.getPages());
+            int totalPages = (int)(result.getPages() + result2017.getPages());
             // 2017和2018的订单总数合并
             List<OrderVO> orderVOList = new ArrayList<>();
             orderVOList.addAll(result.getRecords());
+            orderVOList.addAll(result2017.getRecords());
+
             return ResponseVO.success(nowPage,totalPages,"",orderVOList);
 
         }else{
